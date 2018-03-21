@@ -1,0 +1,161 @@
+syntax = "proto3";
+
+import "google/protobuf/any.proto";
+import "google/protobuf/empty.proto";
+
+package atari;
+
+// Atari service allows for reinforcement agents to play atari over the network.
+service Atari {
+  rpc Start(Environment) returns (Observation) {}
+  rpc Step(Action) returns (State) {}
+}
+
+// Action is a discrete action.
+message Action {
+  // The index of the action. Atari environments have discrete action spaces
+  // with from 3 to 16 possible actions.
+  uint32 value = 1;
+}
+
+// Observation is an 8bit RGB image or an array of 8 bit values in the atari RAM.
+// Images have shape (250, 160, 3), and RAM values shape (128,).
+message Observation {
+  // The dimensions of the observation array.
+  repeated int32 shape = 1;
+  // The values of the observation array. These are actually 8bit, in both the
+  // memory and image cases. Protobuf doesn't have a uint8 type, but does use
+  // variable length encoding.
+  repeated uint32 values = 2;
+}
+
+// State is the full state of the system.
+message State {
+  // The current observation.
+  Observation observation = 1;
+  // The scalar reward received this period.
+  float reward = 2;
+  // Whether the episode is done.
+  bool done = 3;
+  // Information for debugging purposes.
+  string info = 4;
+}
+
+enum Environment {
+  AIR_RAID = 0;
+  AIR_RAID_RAM = 1;
+  ALIEN = 2;
+  ALIEN_RAM = 3;
+  AMIDAR = 4;
+  AMIDAR_RAM = 5;
+  ASSAULT = 6;
+  ASSAULT_RAM = 7;
+  ASTERIX = 8;
+  ASTERIX_RAM = 9;
+  ASTEROIDS = 10;
+  ASTEROIDS_RAM = 11;
+  ATLANTIS = 12;
+  ATLANTIS_RAM = 13;
+  BANK_HEIST = 14;
+  BANK_HEIST_RAM = 15;
+  BATTLE_ZONE = 16;
+  BATTLE_ZONE_RAM = 17;
+  BEAM_RIDER = 18;
+  BEAM_RIDER_RAM = 19;
+  BERZERK = 20;
+  BERZERK_RAM = 21;
+  BOWLING = 22;
+  BOWLING_RAM = 23;
+  BOXING = 24;
+  BOXING_RAM = 25;
+  BREAKOUT = 26;
+  BREAKOUT_RAM = 27;
+  CARNIVAL = 28;
+  CARNIVAL_RAM = 29;
+  CENTIPEDE = 30;
+  CENTIPEDE_RAM = 31;
+  CHOPPER_COMMAND = 32;
+  CHOPPER_COMMAND_RAM = 33;
+  CRAZY_CLIMBER = 34;
+  CRAZY_CLIMBER_RAM = 35;
+  DEMON_ATTACK = 36;
+  DEMON_ATTACK_RAM = 37;
+  DOUBLE_DUNK = 38;
+  DOUBLE_DUNK_RAM = 39;
+  ELEVATOR_ACTION = 40;
+  ELEVATOR_ACTION_RAM = 41;
+  ENDURO = 42;
+  ENDURO_RAM = 43;
+  FISHING_DERBY = 44;
+  FISHING_DERBY_RAM = 45;
+  FREEWAY = 46;
+  FREEWAY_RAM = 47;
+  FROSTBITE = 48;
+  FROSTBITE_RAM = 49;
+  GOPHER = 50;
+  GOPHER_RAM = 51;
+  GRAVITAR = 52;
+  GRAVITAR_RAM = 53;
+  ICE_HOCKEY = 54;
+  ICE_HOCKEY_RAM = 55;
+  JAMES_BOND = 56;
+  JAMES_BOND_RAM = 57;
+  JOURNEY_ESCAPE = 58;
+  JOURNEY_ESCAPE_RAM = 59;
+  KANGAROO = 60;
+  KANGAROO_RAM = 61;
+  KRULL = 62;
+  KRULL_RAM = 63;
+  KUNG_FU_MASTER = 64;
+  KUNG_FU_MASTER_RAM = 65;
+  MONTEZUMA_REVENGE = 66;
+  MONTEZUMA_REVENGE_RAM = 67;
+  MS_PACMAN = 68;
+  MS_PACMAN_RAM = 69;
+  NAME_THIS_GAME = 70;
+  NAME_THIS_GAME_RAM = 71;
+  PHOENIX = 72;
+  PHOENIX_RAM = 73;
+  PITFALL = 74;
+  PITFALL_RAM = 75;
+  PONG = 76;
+  PONG_RAM = 77;
+  POOYAN = 78;
+  POOYAN_RAM = 79;
+  PRIVATE_EYE = 80;
+  PRIVATE_EYE_RAM = 81;
+  QBERT = 82;
+  QBERT_RAM = 83;
+  RIVER_RAID = 84;
+  RIVER_RAID_RAM = 85;
+  ROAD_RUNNER = 86;
+  ROAD_RUNNER_RAM = 87;
+  ROBOTANK = 88;
+  ROBOTANK_RAM = 89;
+  SEAQUEST = 90;
+  SEAQUEST_RAM = 91;
+  SKIING = 92;
+  SKIING_RAM = 93;
+  SPACE_INVADERS = 94;
+  SPACE_INVADERS_RAM = 95;
+  STAR_GUNNER = 96;
+  STAR_GUNNER_RAM = 97;
+  TENNIS = 98;
+  TENNIS_RAM = 99;
+  TIME_PILOT = 100;
+  TIME_PILOT_RAM = 101;
+  TUTANKHAM = 102;
+  TUTANKHAM_RAM = 103;
+  UP_N_DOWN = 104;
+  UP_N_DOWN_RAM = 105;
+  VENTURE = 106;
+  VENTURE_RAM = 107;
+  VIDEO_PINBALL = 108;
+  VIDEO_PINBALL_RAM = 109;
+  WIZARD_OF_WOR = 110;
+  WIZARD_OF_WOR_RAM = 111;
+  YARS_REVENGE = 112;
+  YARS_REVENGE_RAM = 113;
+  ZAXXON = 114;
+  ZAXXON_RAM = 115;
+}
