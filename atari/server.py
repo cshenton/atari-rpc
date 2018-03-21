@@ -1,4 +1,8 @@
 """The Atari server."""
+
+from concurrent import futures
+
+import grpc
 import gym
 import proto
 
@@ -68,3 +72,14 @@ class Server(proto.AtariServicer):
             done=done,
             info=str(info),
         )
+
+    def run(self):
+        server = grpc.server(futures.ThreadPoolExecutor(max_workers=1)) # yes, one.
+        proto.register_server(self, server)
+        server.add_insecure_port('[::]:8080')
+        server.start()
+        try:
+            while True:
+                time.sleep(86400)
+        except KeyboardInterrupt:
+            server.stop(0)

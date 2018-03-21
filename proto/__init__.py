@@ -8,3 +8,4 @@ from proto.atari_pb2 import (
     State,
 )
 from proto.atari_pb2_grpc import (AtariServicer)
+from proto.atari_pb2_grpc import add_AtariServicer_to_server as register_server
