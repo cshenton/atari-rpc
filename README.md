@@ -49,7 +49,21 @@ Where `Start` wraps both make and reset in the gym python API.
 - Guide on generating client stubs
 - (later) remove python client and talk directly to ALE
 
-## Generating stubs
+## Contributing
+
+#### Environment
+```bash
+virtualenv -p python3.5 venv
+pip install -r requirements.txt
+source venv/bin/activate
+```
+
+#### Running tests
+```bash
+python -m pytest tests/
+```
+
+#### Generating stubs
 ```
 python -m grpc_tools.protoc -I . proto/atari.proto --python_out=. --grpc_python_out=.
 ```
