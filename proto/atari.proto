@@ -1,21 +1,21 @@
 syntax = "proto3";
 
-import "google/protobuf/any.proto";
-import "google/protobuf/empty.proto";
-
 package atari;
 
 // Atari service allows for reinforcement agents to play atari over the network.
 service Atari {
+  // Start initialises and resets the environment.
   rpc Start(Environment) returns (Observation) {}
+  // Step applies the action to the active environment and returns the state.
   rpc Step(Action) returns (State) {}
+  // TODO: expose a streaming RPC to allow concurrent rendering of the env.
 }
 
-// Action is a discrete action.
-message Action {
-  // The index of the action. Atari environments have discrete action spaces
-  // with from 3 to 16 possible actions.
-  uint32 value = 1;
+// Environment describes an active / to be activated environment.
+message Environment {
+  Game game = 1;
+  GameType game_type = 2;
+  uint32 version = 3;
 }
 
 // Observation is an 8bit RGB image or an array of 8 bit values in the atari RAM.
@@ -27,6 +27,13 @@ message Observation {
   // memory and image cases. Protobuf doesn't have a uint8 type, but does use
   // variable length encoding.
   repeated uint32 values = 2;
+  }
+
+// Action is a discrete action.
+message Action {
+  // The index of the action. Atari environments have discrete action spaces
+  // with from 3 to 16 possible actions.
+  uint32 value = 1;
 }
 
 // State is the full state of the system.
@@ -41,121 +48,72 @@ message State {
   string info = 4;
 }
 
-enum Environment {
+// GameType denotes whether the environment should be from pixels or RAM.
+enum GameType {
+  IMAGE = 0;
+  RAM = 1;
+}
+
+// Game is one of the available game environments. This enum is exhaustive but
+// it serves the purpose of documenting the available environments as simple as
+// possible.
+enum Game {
   AIR_RAID = 0;
-  AIR_RAID_RAM = 1;
-  ALIEN = 2;
-  ALIEN_RAM = 3;
-  AMIDAR = 4;
-  AMIDAR_RAM = 5;
-  ASSAULT = 6;
-  ASSAULT_RAM = 7;
-  ASTERIX = 8;
-  ASTERIX_RAM = 9;
-  ASTEROIDS = 10;
-  ASTEROIDS_RAM = 11;
-  ATLANTIS = 12;
-  ATLANTIS_RAM = 13;
-  BANK_HEIST = 14;
-  BANK_HEIST_RAM = 15;
-  BATTLE_ZONE = 16;
-  BATTLE_ZONE_RAM = 17;
-  BEAM_RIDER = 18;
-  BEAM_RIDER_RAM = 19;
-  BERZERK = 20;
-  BERZERK_RAM = 21;
-  BOWLING = 22;
-  BOWLING_RAM = 23;
-  BOXING = 24;
-  BOXING_RAM = 25;
-  BREAKOUT = 26;
-  BREAKOUT_RAM = 27;
-  CARNIVAL = 28;
-  CARNIVAL_RAM = 29;
-  CENTIPEDE = 30;
-  CENTIPEDE_RAM = 31;
-  CHOPPER_COMMAND = 32;
-  CHOPPER_COMMAND_RAM = 33;
-  CRAZY_CLIMBER = 34;
-  CRAZY_CLIMBER_RAM = 35;
-  DEMON_ATTACK = 36;
-  DEMON_ATTACK_RAM = 37;
-  DOUBLE_DUNK = 38;
-  DOUBLE_DUNK_RAM = 39;
-  ELEVATOR_ACTION = 40;
-  ELEVATOR_ACTION_RAM = 41;
-  ENDURO = 42;
-  ENDURO_RAM = 43;
-  FISHING_DERBY = 44;
-  FISHING_DERBY_RAM = 45;
-  FREEWAY = 46;
-  FREEWAY_RAM = 47;
-  FROSTBITE = 48;
-  FROSTBITE_RAM = 49;
-  GOPHER = 50;
-  GOPHER_RAM = 51;
-  GRAVITAR = 52;
-  GRAVITAR_RAM = 53;
-  ICE_HOCKEY = 54;
-  ICE_HOCKEY_RAM = 55;
-  JAMES_BOND = 56;
-  JAMES_BOND_RAM = 57;
-  JOURNEY_ESCAPE = 58;
-  JOURNEY_ESCAPE_RAM = 59;
-  KANGAROO = 60;
-  KANGAROO_RAM = 61;
-  KRULL = 62;
-  KRULL_RAM = 63;
-  KUNG_FU_MASTER = 64;
-  KUNG_FU_MASTER_RAM = 65;
-  MONTEZUMA_REVENGE = 66;
-  MONTEZUMA_REVENGE_RAM = 67;
-  MS_PACMAN = 68;
-  MS_PACMAN_RAM = 69;
-  NAME_THIS_GAME = 70;
-  NAME_THIS_GAME_RAM = 71;
-  PHOENIX = 72;
-  PHOENIX_RAM = 73;
-  PITFALL = 74;
-  PITFALL_RAM = 75;
-  PONG = 76;
-  PONG_RAM = 77;
-  POOYAN = 78;
-  POOYAN_RAM = 79;
-  PRIVATE_EYE = 80;
-  PRIVATE_EYE_RAM = 81;
-  QBERT = 82;
-  QBERT_RAM = 83;
-  RIVER_RAID = 84;
-  RIVER_RAID_RAM = 85;
-  ROAD_RUNNER = 86;
-  ROAD_RUNNER_RAM = 87;
-  ROBOTANK = 88;
-  ROBOTANK_RAM = 89;
-  SEAQUEST = 90;
-  SEAQUEST_RAM = 91;
-  SKIING = 92;
-  SKIING_RAM = 93;
-  SPACE_INVADERS = 94;
-  SPACE_INVADERS_RAM = 95;
-  STAR_GUNNER = 96;
-  STAR_GUNNER_RAM = 97;
-  TENNIS = 98;
-  TENNIS_RAM = 99;
-  TIME_PILOT = 100;
-  TIME_PILOT_RAM = 101;
-  TUTANKHAM = 102;
-  TUTANKHAM_RAM = 103;
-  UP_N_DOWN = 104;
-  UP_N_DOWN_RAM = 105;
-  VENTURE = 106;
-  VENTURE_RAM = 107;
-  VIDEO_PINBALL = 108;
-  VIDEO_PINBALL_RAM = 109;
-  WIZARD_OF_WOR = 110;
-  WIZARD_OF_WOR_RAM = 111;
-  YARS_REVENGE = 112;
-  YARS_REVENGE_RAM = 113;
-  ZAXXON = 114;
-  ZAXXON_RAM = 115;
+  ALIEN = 1;
+  AMIDAR = 3;
+  ASSAULT = 4;
+  ASTERIX = 5;
+  ASTEROIDS = 6;
+  ATLANTIS = 7;
+  BANK_HEIST = 8;
+  BATTLE_ZONE = 9;
+  BEAM_RIDER = 10;
+  BERZERK = 11;
+  BOWLING = 12;
+  BOXING = 13;
+  BREAKOUT = 14;
+  CARNIVAL = 15;
+  CENTIPEDE = 16;
+  CHOPPER_COMMAND = 17;
+  CRAZY_CLIMBER = 18;
+  DEMON_ATTACK = 19;
+  DOUBLE_DUNK = 20;
+  ELEVATOR_ACTION = 21;
+  ENDURO = 22;
+  FISHING_DERBY = 23;
+  FREEWAY = 24;
+  FROSTBITE = 25;
+  GOPHER = 26;
+  GRAVITAR = 27;
+  ICE_HOCKEY = 28;
+  JAMES_BOND = 29;
+  JOURNEY_ESCAPE = 30;
+  KANGAROO = 31;
+  KRULL = 32;
+  KUNG_FU_MASTER = 33;
+  MONTEZUMA_REVENGE = 34;
+  MS_PACMAN = 35;
+  NAME_THIS_GAME = 36;
+  PHOENIX = 37;
+  PITFALL = 38;
+  PONG = 39;
+  POOYAN = 40;
+  PRIVATE_EYE = 41;
+  QBERT = 42;
+  RIVER_RAID = 43;
+  ROAD_RUNNER = 44;
+  ROBOTANK = 45;
+  SEAQUEST = 46;
+  SKIING = 47;
+  SPACE_INVADERS = 48;
+  STAR_GUNNER = 49;
+  TENNIS = 50;
+  TIME_PILOT = 51;
+  TUTANKHAM = 52;
+  UP_N_DOWN = 53;
+  VENTURE = 54;
+  VIDEO_PINBALL = 55;
+  WIZARD_OF_WOR = 56;
+  YARS_REVENGE = 57;
+  ZAXXON = 58;
 }
