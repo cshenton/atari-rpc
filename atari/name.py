@@ -1,24 +1,24 @@
 """Compatibility layer between proto.Environment and gym name strings."""
 
-def make_name(game, game_type, version):
+def make_name(env):
     """Returns a gym compatible name, like 'Pong-ram-v0'.
 
-    Arguments:
-        game (proto.Game): A game enum value.
-        game_type (proto.GameType): Game type (RAM or image).
-        version (int): The environment version, base 0.
+    Args:
+        env (proto.Environment): A proto environment message.
+
+    Returns:
+        string: A valid gym environment name.
     """
     name = ''
-    words = game.name.split('_')
+    words = env.game.name.split('_')
 
     for w in words:
         name += w.capitalize()
 
-    if game_type.name == 'RAM':
+    if env.game_type.name == 'RAM':
         name += '-ram'
 
     name += '-v'
-    name += string(version)
+    name += str(env.version)
 
     return name
-
