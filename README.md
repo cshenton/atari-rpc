@@ -48,3 +48,8 @@ Where `Start` wraps both make and reset in the gym python API.
 - Python gRPC server with the atari environments
 - Guide on generating client stubs
 - (later) remove python client and talk directly to ALE
+
+## Generating stubs
+```
+python -m grpc_tools.protoc -I . proto/atari.proto --python_out=. --grpc_python_out=.
+```
