@@ -1,53 +1,38 @@
-# Atari RPC
+# Atari RPC :space_invader:
 
 An RPC server that serves the Arcade Learning Environment over the network.
 
 
-## Why
+## What Is This?
 
-This is for people who want to build reinforcement learning algorithms in
-languages other than python, or who want to explore alternative network setups
-in distributed reinforcement learning models.
-
-Currently, one has the following choices:
-
-- Directly call the C++ source for some environment
-- Use an OpenAI gym environment from python
-
-So if you're not using python, C++, or something like lua which interoperates
-nicely with C, C++, then this is a pain.
-
-Specifically for me, I'm implementing reinforcement algorithms in Go.
+This is an RPC server that exposes the "arcade learning environment" over the network.
+It uses OpenAI's gym and Google's gRPC under the hood. It is intended to enable
+language agnostic access to this reinforcement learning environment.
 
 
-## How
+## Installation & Usage
 
-Remote procedure call (RPC) is the standard approach to interoperability between
-applications with different runtimes. This project exposes a subset of OpenAI's
-python API over the network in a type-safe manner, by funnelling network requests
-to and from the environment.
-
-This will be shipped as a pre-built docker image, so that getting up and running
-is as easy as:
-
+To install the server, just pull the prebuilt docker image:
 ```bash
 docker run -p 8080:8080 cshenton/atari
 ```
 
-From then, the server will handle a single environment at a time, with the
-following API:
+To communicate with the server, use the included `atari.proto` file in `proto/`
+to generate a client to communicate with the library. For example, to generate
+Golang stubs from a neighbouring repo, run:
+```
+protoc -I ../atari-rpc/proto/ atari.proto --go_out=plugins=grpc:path/to/your/proto
+```
 
-- `Start(Environment) returns State` resets the environment to the specified one
-- `Step(Action) returns State` steps the environment
-
-Where `Start` wraps both make and reset in the gym python API.
+Then use the generated client and structs to communicate with the server. If you've
+never used gRPC before, check out the [docs for your language](https://grpc.io/docs/).
 
 
-## Roadmap
+## Technical Notes
 
-- Python gRPC server with the atari environments
-- Guide on generating client stubs
-- (later) remove python client and talk directly to ALE
+This is a single thread server, it does not handle multiple active environments at
+once, if you want that, just spin up more containers.
+
 
 ## Contributing
 

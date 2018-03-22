@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package atari;
 
+option go_package = "proto";
+
 // Atari service allows for reinforcement agents to play atari over the network.
 service Atari {
   // Start initialises and resets the environment.
